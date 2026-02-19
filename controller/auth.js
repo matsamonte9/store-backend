@@ -21,13 +21,11 @@ const login = async (req, res) => {
   }
 
   const token = user.createJWT();
-
-  const isProduction = process.env.NODE_ENV === 'production';
   
   res.cookie('token', token, {
     httpOnly: true,
-    sameSite: isProduction ? 'none' : 'lax',  // 'none' for cross-origin
-    secure: isProduction,                      // true in production
+    sameSite: 'none',  // 'none' for cross-origin
+    secure: process.env.NODE_ENV === 'production',                      // true in production
     maxAge: 24 * 60 * 60 * 1000,               // 1 day
     domain: isProduction ? '.railway.app' : 'localhost'  // Optional: set domain
   });
@@ -40,8 +38,8 @@ const logout = async (req, res) => {
   
   res.clearCookie('token', {
     httpOnly: true,
-    sameSite: isProduction ? 'none' : 'lax',
-    secure: isProduction,
+    sameSite: 'none',
+    secure: process.env.NODE_ENV === 'production',
   });
 
   res.status(200).json({ msg: 'Logged out successfully' });
