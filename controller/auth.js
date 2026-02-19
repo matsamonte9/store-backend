@@ -21,11 +21,14 @@ const login = async (req, res) => {
   }
 
   const token = user.createJWT();
+
+  const origin = req.get('origin');
+  const isLocalhost = origin?.includes('localhost');
   
   res.cookie('token', token, {
     httpOnly: true,
-    sameSite: 'none',  // 'none' for cross-origin
-    secure: process.env.NODE_ENV === 'production',                      // true in production
+    sameSite: isLocalhost ? 'lax' : 'none',
+    secure: !isLocalhost,  // false for localhost (HTTP), true for others (HTTPS)
     maxAge: 24 * 60 * 60 * 1000,               // 1 day
     domain: isProduction ? '.railway.app' : 'localhost'  // Optional: set domain
   });
@@ -34,12 +37,13 @@ const login = async (req, res) => {
 }
 
 const logout = async (req, res) => {
-  const isProduction = process.env.NODE_ENV === 'production';
+  const origin = req.get('origin');
+  const isLocalhost = origin?.includes('localhost');
   
   res.clearCookie('token', {
     httpOnly: true,
-    sameSite: 'none',
-    secure: process.env.NODE_ENV === 'production',
+    sameSite: isLocalhost ? 'lax' : 'none',
+    secure: !isLocalhost,  // false for localhost (HTTP), true for others (HTTPS)
   });
 
   res.status(200).json({ msg: 'Logged out successfully' });
