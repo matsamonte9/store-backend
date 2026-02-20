@@ -27,11 +27,21 @@ const errorHandlerMiddleware = require('./middleware/error-handler');
 
 const app = express();
 
-app.use(cors({
-  origin: 'http://localhost:5500', // frontend URL
-  credentials: true,               // allow cookies
-}));
+const allowedOrigins = [
+  'http://localhost:5500',
+  'https://your-frontend-domain.com',
+];
 
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 // ===== GLOBAL MIDDLEWARE =====
 app.use(express.json());
 app.use(cookieParser());

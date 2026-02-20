@@ -28,8 +28,8 @@ const login = async (req, res) => {
   res.cookie('token', token, {
     httpOnly: true,
     sameSite: isLocalhost ? 'lax' : 'none',
-    secure: !isLocalhost,  // false for localhost (HTTP), true for others (HTTPS)
-    maxAge: 24 * 60 * 60 * 1000,               // 1 day
+    secure: !isLocalhost,  
+    maxAge: 24 * 60 * 60 * 1000,          
   });
 
   res.status(StatusCodes.OK).json({ user: { userId: user._id, name: user.name, role: user.role, email: user.email } });
