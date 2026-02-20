@@ -22,27 +22,25 @@ const login = async (req, res) => {
 
   const token = user.createJWT();
 
-  const origin = req.get('origin');
-  const isLocalhost = origin?.includes('localhost');
-  
+  const isProduction = process.env.NODE_ENV === 'production';
+
   res.cookie('token', token, {
     httpOnly: true,
-    sameSite: isLocalhost ? 'lax' : 'none',
-    secure: !isLocalhost,  
-    maxAge: 24 * 60 * 60 * 1000,          
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction,
+    maxAge: 24 * 60 * 60 * 1000,
   });
 
   res.status(StatusCodes.OK).json({ user: { userId: user._id, name: user.name, role: user.role, email: user.email } });
 }
 
 const logout = async (req, res) => {
-  const origin = req.get('origin');
-  const isLocalhost = origin?.includes('localhost');
+  const isProduction = process.env.NODE_ENV === 'production';
   
   res.clearCookie('token', {
     httpOnly: true,
-    sameSite: isLocalhost ? 'lax' : 'none',
-    secure: !isLocalhost,  // false for localhost (HTTP), true for others (HTTPS)
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction,
   });
 
   res.status(200).json({ msg: 'Logged out successfully' });
