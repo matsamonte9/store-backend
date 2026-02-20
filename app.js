@@ -29,7 +29,7 @@ const app = express();
 
 const allowedOrigins = [
   'http://localhost:5500',
-  'https://your-frontend-domain.com',
+  'https://store-frontend-amber.vercel.app/login.html',
 ];
 
 app.use(cors({
